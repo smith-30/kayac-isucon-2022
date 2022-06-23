@@ -16,7 +16,7 @@ services:
     cpus: 1
     mem_limit: 1g
     # Go実装の場合は golang/ node実装の場合は node/
-    build: node/
+    build: golang/
     environment:
       ISUCON_DB_HOST: mysql
       ISUCON_DB_PORT: 3306
@@ -25,6 +25,7 @@ services:
       ISUCON_DB_NAME: isucon_listen80
     links:
       - mysql
+      - redis
     volumes:
       - ./public:/home/isucon/webapp/public
       - gopkg:/usr/local/go/pkg
@@ -32,8 +33,8 @@ services:
     restart: always
 
   mysql:
-    cpus: 1
-    mem_limit: 1g
+    cpus: 2
+    mem_limit: 2g
     image: mysql/mysql-server:8.0.28
     # M1 mac(ARM)の場合は aarch64 のimageに変更する
     # image: mysql/mysql-server:8.0.28-aarch64
@@ -48,6 +49,12 @@ services:
     ports:
       - 13306:3306
     restart: always
+
+  redis:
+    mem_limit: 1g
+    image: "redis:7.0.2-alpine"
+    ports:
+      - "16379:6379"
 
 volumes:
   mysql:
